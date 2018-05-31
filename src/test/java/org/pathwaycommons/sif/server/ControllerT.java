@@ -1,8 +1,10 @@
 package org.pathwaycommons.sif.server;
 
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,23 +17,22 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 @RunWith(SpringRunner.class)
 @Import(Application.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, properties = {
+    "sifgraph.data=classpath:bmp.gz",
+    "sifgraph.annotations=DATA_SOURCE,PUBMED_IDS,PATHWAY_NAMES,MEDIATORS",
+    "sifgraph.relationships=CONTROLS_STATE_CHANGE_OF,IN_COMPLEX_WITH"
+})
 public class ControllerT {
 
     @Autowired
     private TestRestTemplate template;
 
     @Test
-    public void getHello() {
-        ResponseEntity<String> response = template.getForEntity("/", String.class);
-        assertThat(response.getBody(), equalTo("Hello!"));
-    }
-
-    @Test
-    public void getSif() {
-        ResponseEntity<String> response = template
-            .getForEntity("/sifgraph?kind=neighborhood&source=foo", String.class);
-        assertThat(response.getBody(), equalTo(null));
+    public void neighborhood() {
+        ResponseEntity<String> response = template.getForEntity("/neighborhood?source=bmp2", String.class);
+        assertThat(response.getBody(), equalTo(null)); //no result because gene symbols are case-sensitive!
+        response = template.getForEntity("/neighborhood?source=BMP2", String.class);
+        assertThat(response.getBody(), containsString("BMP2\tcontrols-state-change-of\tBMPR1A"));
     }
 
 }

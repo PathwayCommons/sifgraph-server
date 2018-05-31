@@ -1,22 +1,19 @@
 package org.pathwaycommons.sif.server;
 
-import java.util.Arrays;
-
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 
+import java.io.IOException;
+
 @SpringBootApplication
+@EnableConfigurationProperties(SifgraphProperties.class)
 public class Application {
 
-    //TODO
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         ApplicationContext ctx = SpringApplication.run(Application.class, args);
-        String[] beanNames = ctx.getBeanDefinitionNames();
-        Arrays.sort(beanNames);
-        for (String beanName : beanNames) {
-            System.out.println(beanName);
-        }
+        ((Controller)ctx.getBean("controller")).init();
     }
 
 }

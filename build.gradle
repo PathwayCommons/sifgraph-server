@@ -8,7 +8,6 @@ buildscript {
 }
 
 apply plugin: 'java'
-apply plugin: 'eclipse'
 apply plugin: 'idea'
 apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
@@ -41,8 +40,11 @@ dependencies {
     compile("pathwaycommons.sif:sifgraph:1.0.0-SNAPSHOT")
 
     compileOnly("org.springframework.boot:spring-boot-devtools")
+
+    //can use the following instead 'compileOnly' since gradle 4.6:
+    annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
 }
 
 task wrapper(type: Wrapper) {
-    gradleVersion = '2.3'
+    gradleVersion = '4.7'
 }

@@ -5,5 +5,7 @@ java library that executes _neighborhood_, _pathsbetween_, etc., graph queries
 on the Pathway Commons' [Extended SIF](http://www.pathwaycommons.org/pc2/formats#sif) data.
 
 Clone, then build & run:
-
-./gradlew build && java -Dserver.port=8080 -jar build/libs/sifgraph-server.jar
+```
+./gradlew build 
+java -jar build/libs/sifgraph-server.jar --server.port=8080
+```
