@@ -9,7 +9,9 @@ import org.pathwaycommons.sif.util.EdgeSelector;
 import org.pathwaycommons.sif.util.RelationTypeSelector;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ResourceLoader;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -48,12 +50,12 @@ public class Controller {
         graph = new Loader(annotationTypes).load(new GZIPInputStream(is));
     }
 
-    @RequestMapping("/neighborhood")
+    @RequestMapping(path = "/neighborhood", method = RequestMethod.GET, produces = MediaType.TEXT_PLAIN_VALUE)
     public String nhood (
         @RequestParam(defaultValue = "BOTHSTREAM") Direction direction,
         @RequestParam(defaultValue = "1") Integer limit,
         @RequestParam String[] source //, HttpServletResponse response
-    ) throws IOException
+    )
     {
         Set<String> sources =  new HashSet();
         for(String s : source)
@@ -63,12 +65,12 @@ public class Controller {
         return write(result);
     }
 
-    @RequestMapping("/pathsbetween")
+    @RequestMapping(path = "/pathsbetween", method = RequestMethod.GET, produces = MediaType.TEXT_PLAIN_VALUE)
     public String pathsbetween (
         @RequestParam(defaultValue = "false") Boolean directed,
         @RequestParam(defaultValue = "1") Integer limit,
         @RequestParam String[] source
-    ) throws IOException
+    )
     {
         Set<String> sources =  new HashSet();
         for(String s : source)
@@ -78,12 +80,12 @@ public class Controller {
         return write(result);
     }
 
-    @RequestMapping("/commonstream")
+    @RequestMapping(path = "/commonstream", method = RequestMethod.GET, produces = MediaType.TEXT_PLAIN_VALUE)
     public String commonstream (
         @RequestParam(defaultValue = "DOWNSTREAM") Direction direction,
         @RequestParam(defaultValue = "1") Integer limit,
         @RequestParam String[] source
-    ) throws IOException
+    )
     {
         Set<String> sources =  new HashSet();
         for(String s : source)
@@ -93,12 +95,12 @@ public class Controller {
         return write(result);
     }
 
-    @RequestMapping("/pathsfromto")
+    @RequestMapping(path = "/pathsfromto", method = RequestMethod.GET, produces = MediaType.TEXT_PLAIN_VALUE)
     public String pathsfromto (
         @RequestParam(defaultValue = "1") Integer limit,
         @RequestParam String[] source,
         @RequestParam String[] target
-    ) throws IOException
+    )
     {
         Set<String> sources =  new HashSet();
         for(String s : source)
