@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.PostConstruct;
-//import javax.servlet.http.HttpServletResponse;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -60,9 +59,67 @@ public class Controller {
         for(String s : source)
             sources.add(s);
         Set<Object> result = QueryExecutor.searchNeighborhood(graph, edgeSelector, sources, direction, limit);
+
+        return write(result);
+    }
+
+    @RequestMapping("/pathsbetween")
+    public String pathsbetween (
+        @RequestParam(defaultValue = "false") Boolean directed,
+        @RequestParam(defaultValue = "1") Integer limit,
+        @RequestParam String[] source
+    ) throws IOException
+    {
+        Set<String> sources =  new HashSet();
+        for(String s : source)
+            sources.add(s);
+        Set<Object> result = QueryExecutor.searchPathsBetween(graph, edgeSelector, sources, directed, limit);
+
+        return write(result);
+    }
+
+    @RequestMapping("/commonstream")
+    public String commonstream (
+        @RequestParam(defaultValue = "DOWNSTREAM") Direction direction,
+        @RequestParam(defaultValue = "1") Integer limit,
+        @RequestParam String[] source
+    ) throws IOException
+    {
+        Set<String> sources =  new HashSet();
+        for(String s : source)
+            sources.add(s);
+        Set<Object> result = QueryExecutor.searchCommonStream(graph, edgeSelector, sources, direction, limit);
+
+        return write(result);
+    }
+
+    @RequestMapping("/pathsfromto")
+    public String pathsfromto (
+        @RequestParam(defaultValue = "1") Integer limit,
+        @RequestParam String[] source,
+        @RequestParam String[] target
+    ) throws IOException
+    {
+        Set<String> sources =  new HashSet();
+        for(String s : source)
+            sources.add(s);
+        Set<String> targets =  new HashSet();
+        for(String s : target)
+            targets.add(s);
+        Set<Object> result = QueryExecutor.searchPathsFromTo(graph, edgeSelector, sources, targets, limit);
+
+        return write(result);
+    }
+
+    private String write(Set<Object> result) {
         OutputStream bos  = new ByteArrayOutputStream();
-        sifWriter.write(result, bos);
-//        sifWriter.write(result, response.getOutputStream());
+        try {
+            sifWriter.write(result, bos);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to write result to text format", e);
+        }
+
         return bos.toString();
     }
+
 }

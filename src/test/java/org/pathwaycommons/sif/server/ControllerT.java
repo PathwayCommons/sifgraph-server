@@ -4,7 +4,6 @@ import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +32,28 @@ public class ControllerT {
         assertThat(response.getBody(), equalTo(null)); //no result because gene symbols are case-sensitive!
         response = template.getForEntity("/neighborhood?source=BMP2", String.class);
         assertThat(response.getBody(), containsString("BMP2\tcontrols-state-change-of\tBMPR1A"));
+    }
+
+    @Test
+    public void pathsbetween() {
+        ResponseEntity<String> response = template.getForEntity("/pathsbetween?source=BMP2&source=NOG", String.class);
+        assertThat(response.getBody(), containsString("NOG\tin-complex-with\tBMP2"));
+    }
+
+    @Test
+    public void commonstream() {
+        ResponseEntity<String> response = template.getForEntity("/commonstream?source=BMP2&source=BMPR1A", String.class);
+        assertThat(response.getBody(), containsString("BMP2\tin-complex-with\tSMURF1"));
+        assertThat(response.getBody(), containsString("BMP2\tcontrols-state-change-of\tBMPR1A"));
+    }
+
+
+    @Test
+    public void pathsfromto() {
+        ResponseEntity<String> response = template.getForEntity("/pathsfromto?source=BMP2&target=BMPR1A", String.class);
+        System.out.println(response.getBody());
+        assertThat(response.getBody(), containsString("BMP2\tcontrols-state-change-of\tBMPR1A"));
+        assertThat(response.getBody(), containsString("BMP2\tin-complex-with\tBMPR1A"));
     }
 
 }
