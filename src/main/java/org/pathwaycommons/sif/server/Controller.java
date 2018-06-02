@@ -53,14 +53,14 @@ public class Controller {
     @RequestMapping(path = "/neighborhood", method = RequestMethod.GET, produces = MediaType.TEXT_PLAIN_VALUE)
     public String nhood (
         @RequestParam(defaultValue = "BOTHSTREAM") Direction direction,
-        @RequestParam(defaultValue = "1") Integer limit,
-        @RequestParam String[] source //, HttpServletResponse response
+//        @RequestParam(defaultValue = "1") Integer limit,
+        @RequestParam String[] source
     )
     {
         Set<String> sources =  new HashSet();
         for(String s : source)
             sources.add(s);
-        Set<Object> result = QueryExecutor.searchNeighborhood(graph, edgeSelector, sources, direction, limit);
+        Set<Object> result = QueryExecutor.searchNeighborhood(graph, edgeSelector, sources, direction, 1);
 
         return write(result);
     }
@@ -75,6 +75,9 @@ public class Controller {
         Set<String> sources =  new HashSet();
         for(String s : source)
             sources.add(s);
+
+        if(limit > 3) limit = 1; //too much data or out of memory when limit > 3
+
         Set<Object> result = QueryExecutor.searchPathsBetween(graph, edgeSelector, sources, directed, limit);
 
         return write(result);
@@ -83,14 +86,14 @@ public class Controller {
     @RequestMapping(path = "/commonstream", method = RequestMethod.GET, produces = MediaType.TEXT_PLAIN_VALUE)
     public String commonstream (
         @RequestParam(defaultValue = "DOWNSTREAM") Direction direction,
-        @RequestParam(defaultValue = "1") Integer limit,
+//        @RequestParam(defaultValue = "1") Integer limit,
         @RequestParam String[] source
     )
     {
         Set<String> sources =  new HashSet();
         for(String s : source)
             sources.add(s);
-        Set<Object> result = QueryExecutor.searchCommonStream(graph, edgeSelector, sources, direction, limit);
+        Set<Object> result = QueryExecutor.searchCommonStream(graph, edgeSelector, sources, direction, 1);
 
         return write(result);
     }
@@ -108,6 +111,9 @@ public class Controller {
         Set<String> targets =  new HashSet();
         for(String s : target)
             targets.add(s);
+
+        if(limit > 3) limit = 1; //too much data or out of memory when limit > 3
+
         Set<Object> result = QueryExecutor.searchPathsFromTo(graph, edgeSelector, sources, targets, limit);
 
         return write(result);
