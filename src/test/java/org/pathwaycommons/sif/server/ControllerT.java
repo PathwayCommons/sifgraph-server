@@ -2,6 +2,7 @@ package org.pathwaycommons.sif.server;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertThat;
 
 import org.junit.Test;
@@ -30,8 +31,13 @@ public class ControllerT {
     public void neighborhood() {
         ResponseEntity<String> response = template.getForEntity("/neighborhood?source=bmp2", String.class);
         assertThat(response.getBody(), equalTo(null)); //no result because gene symbols are case-sensitive!
+
         response = template.getForEntity("/neighborhood?source=BMP2", String.class);
         assertThat(response.getBody(), containsString("BMP2\tcontrols-state-change-of\tBMPR1A"));
+
+        response = template.getForEntity("/neighborhood?source=BMP2&pattern=IN_COMPLEX_WITH", String.class);
+        assertThat(response.getBody(), not(containsString("controls-state-change-of")));
+        assertThat(response.getBody(), containsString("NOG\tin-complex-with\tBMP2"));
     }
 
     @Test

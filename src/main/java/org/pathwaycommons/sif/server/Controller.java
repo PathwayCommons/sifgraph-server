@@ -1,6 +1,7 @@
 package org.pathwaycommons.sif.server;
 
 import org.pathwaycommons.sif.io.Loader;
+import org.pathwaycommons.sif.model.RelationTypeEnum;
 import org.pathwaycommons.sif.model.SIFGraph;
 import org.pathwaycommons.sif.query.Direction;
 import org.pathwaycommons.sif.query.QueryExecutor;
@@ -29,7 +30,6 @@ import java.util.zip.GZIPInputStream;
 public class Controller {
 
     private SIFGraph graph;
-    private EdgeSelector edgeSelector;
     private org.pathwaycommons.sif.io.Writer sifWriter;
     private SifgraphProperties props;
 
@@ -44,7 +44,6 @@ public class Controller {
     @PostConstruct
     void init() throws IOException {
         final EdgeAnnotationType[] annotationTypes = props.getAnnotations();
-        edgeSelector = new RelationTypeSelector(props.getRelationships());
         sifWriter = new org.pathwaycommons.sif.io.Writer(false, annotationTypes);
         InputStream is = resourceLoader.getResource(props.getData()).getInputStream();
         graph = new Loader(annotationTypes).load(new GZIPInputStream(is));
@@ -54,12 +53,16 @@ public class Controller {
     public String nhood (
         @RequestParam(defaultValue = "BOTHSTREAM") Direction direction,
 //        @RequestParam(defaultValue = "1") Integer limit,
-        @RequestParam String[] source
+        @RequestParam String[] source,
+        @RequestParam(defaultValue = "") RelationTypeEnum[] pattern
     )
     {
         Set<String> sources =  new HashSet();
         for(String s : source)
             sources.add(s);
+
+        RelationTypeEnum[] relTypes = (pattern.length>0) ? pattern : props.getRelationships();
+        EdgeSelector edgeSelector = new RelationTypeSelector(relTypes);
         Set<Object> result = QueryExecutor.searchNeighborhood(graph, edgeSelector, sources, direction, 1);
 
         return write(result);
@@ -69,7 +72,8 @@ public class Controller {
     public String pathsbetween (
         @RequestParam(defaultValue = "false") Boolean directed,
         @RequestParam(defaultValue = "1") Integer limit,
-        @RequestParam String[] source
+        @RequestParam String[] source,
+        @RequestParam(defaultValue = "") RelationTypeEnum[] pattern
     )
     {
         Set<String> sources =  new HashSet();
@@ -78,6 +82,8 @@ public class Controller {
 
         if(limit > 3) limit = 1; //too much data or out of memory when limit > 3
 
+        RelationTypeEnum[] relTypes = (pattern.length>0) ? pattern : props.getRelationships();
+        EdgeSelector edgeSelector = new RelationTypeSelector(relTypes);
         Set<Object> result = QueryExecutor.searchPathsBetween(graph, edgeSelector, sources, directed, limit);
 
         return write(result);
@@ -87,12 +93,16 @@ public class Controller {
     public String commonstream (
         @RequestParam(defaultValue = "DOWNSTREAM") Direction direction,
 //        @RequestParam(defaultValue = "1") Integer limit,
-        @RequestParam String[] source
+        @RequestParam String[] source,
+        @RequestParam(defaultValue = "") RelationTypeEnum[] pattern
     )
     {
         Set<String> sources =  new HashSet();
         for(String s : source)
             sources.add(s);
+
+        RelationTypeEnum[] relTypes = (pattern.length>0) ? pattern : props.getRelationships();
+        EdgeSelector edgeSelector = new RelationTypeSelector(relTypes);
         Set<Object> result = QueryExecutor.searchCommonStream(graph, edgeSelector, sources, direction, 1);
 
         return write(result);
@@ -102,7 +112,8 @@ public class Controller {
     public String pathsfromto (
         @RequestParam(defaultValue = "1") Integer limit,
         @RequestParam String[] source,
-        @RequestParam String[] target
+        @RequestParam String[] target,
+        @RequestParam(defaultValue = "") RelationTypeEnum[] pattern
     )
     {
         Set<String> sources =  new HashSet();
@@ -114,6 +125,8 @@ public class Controller {
 
         if(limit > 3) limit = 1; //too much data or out of memory when limit > 3
 
+        RelationTypeEnum[] relTypes = (pattern.length>0) ? pattern : props.getRelationships();
+        EdgeSelector edgeSelector = new RelationTypeSelector(relTypes);
         Set<Object> result = QueryExecutor.searchPathsFromTo(graph, edgeSelector, sources, targets, limit);
 
         return write(result);
