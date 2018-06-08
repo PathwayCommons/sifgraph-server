@@ -29,26 +29,26 @@ public class ControllerT {
 
     @Test
     public void neighborhood() {
-        ResponseEntity<String> response = template.getForEntity("/neighborhood?source=bmp2", String.class);
+        ResponseEntity<String> response = template.getForEntity("/v1/neighborhood?source=bmp2", String.class);
         assertThat(response.getBody(), equalTo(null)); //no result because gene symbols are case-sensitive!
 
-        response = template.getForEntity("/neighborhood?source=BMP2", String.class);
+        response = template.getForEntity("/v1/neighborhood?source=BMP2", String.class);
         assertThat(response.getBody(), containsString("BMP2\tcontrols-state-change-of\tBMPR1A"));
 
-        response = template.getForEntity("/neighborhood?source=BMP2&pattern=IN_COMPLEX_WITH", String.class);
+        response = template.getForEntity("/v1/neighborhood?source=BMP2&pattern=IN_COMPLEX_WITH", String.class);
         assertThat(response.getBody(), not(containsString("controls-state-change-of")));
         assertThat(response.getBody(), containsString("NOG\tin-complex-with\tBMP2"));
     }
 
     @Test
     public void pathsbetween() {
-        ResponseEntity<String> response = template.getForEntity("/pathsbetween?source=BMP2&source=NOG", String.class);
+        ResponseEntity<String> response = template.getForEntity("/v1/pathsbetween?source=BMP2&source=NOG", String.class);
         assertThat(response.getBody(), containsString("NOG\tin-complex-with\tBMP2"));
     }
 
     @Test
     public void commonstream() {
-        ResponseEntity<String> response = template.getForEntity("/commonstream?source=BMP2&source=BMPR1A", String.class);
+        ResponseEntity<String> response = template.getForEntity("/v1/commonstream?source=BMP2&source=BMPR1A", String.class);
         assertThat(response.getBody(), containsString("BMP2\tin-complex-with\tSMURF1"));
         assertThat(response.getBody(), containsString("BMP2\tcontrols-state-change-of\tBMPR1A"));
     }
@@ -56,7 +56,7 @@ public class ControllerT {
 
     @Test
     public void pathsfromto() {
-        ResponseEntity<String> response = template.getForEntity("/pathsfromto?source=BMP2&target=BMPR1A", String.class);
+        ResponseEntity<String> response = template.getForEntity("/v1/pathsfromto?source=BMP2&target=BMPR1A", String.class);
         System.out.println(response.getBody());
         assertThat(response.getBody(), containsString("BMP2\tcontrols-state-change-of\tBMPR1A"));
         assertThat(response.getBody(), containsString("BMP2\tin-complex-with\tBMPR1A"));

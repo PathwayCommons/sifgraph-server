@@ -10,4 +10,4 @@ Clone, then build & run:
 java -jar build/libs/sifgraph-server.jar --server.port=8080
 ```
 
-The web service docs are then available at `http://localhost:8080/swagger-ui.html`
+The web service docs are then available at `http://localhost:8080/sifgraph/swagger-ui.html`
