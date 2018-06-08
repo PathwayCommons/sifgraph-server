@@ -4,6 +4,8 @@ import org.pathwaycommons.sif.model.RelationTypeEnum;
 import org.pathwaycommons.sif.util.EdgeAnnotationType;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
+import java.util.Arrays;
+
 @ConfigurationProperties("sifgraph")
 public class SifgraphProperties {
 
@@ -29,6 +31,10 @@ public class SifgraphProperties {
 
     public RelationTypeEnum[] getRelationships() {
         return relationships;
+    }
+
+    public String getRelationshipsAsString() {
+        return Arrays.stream(relationships).map(Enum::name).toString();
     }
 
     public void setRelationships(RelationTypeEnum[] relationships) {

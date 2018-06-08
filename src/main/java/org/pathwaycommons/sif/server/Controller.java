@@ -1,12 +1,12 @@
 package org.pathwaycommons.sif.server;
 
+import io.swagger.annotations.ApiParam;
 import org.pathwaycommons.sif.io.Loader;
 import org.pathwaycommons.sif.model.RelationTypeEnum;
 import org.pathwaycommons.sif.model.SIFGraph;
 import org.pathwaycommons.sif.query.Direction;
 import org.pathwaycommons.sif.query.QueryExecutor;
 import org.pathwaycommons.sif.util.EdgeAnnotationType;
-import org.pathwaycommons.sif.util.EdgeSelector;
 import org.pathwaycommons.sif.util.RelationTypeSelector;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ResourceLoader;
@@ -25,13 +25,15 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.zip.GZIPInputStream;
 
-
 @RestController
+@RequestMapping(value = "/v1")
 public class Controller {
 
     private SIFGraph graph;
     private org.pathwaycommons.sif.io.Writer sifWriter;
     private SifgraphProperties props;
+
+    private final RelationTypeEnum[] DEFAULT_RELS;
 
     @Autowired
     private ResourceLoader resourceLoader;
@@ -39,6 +41,7 @@ public class Controller {
     @Autowired
     public Controller(SifgraphProperties properties) {
         this.props = properties;
+        DEFAULT_RELS = properties.getRelationships();
     }
 
     @PostConstruct
@@ -51,83 +54,93 @@ public class Controller {
 
     @RequestMapping(path = "/neighborhood", method = RequestMethod.GET, produces = MediaType.TEXT_PLAIN_VALUE)
     public String nhood (
-        @RequestParam(defaultValue = "BOTHSTREAM") Direction direction,
-//        @RequestParam(defaultValue = "1") Integer limit,
-        @RequestParam String[] source,
-        @RequestParam(defaultValue = "") RelationTypeEnum[] pattern
+        @ApiParam("Graph traversal direction. Use UNDIRECTED if you want to see interacts-with relationships too.")
+        @RequestParam(required = false, defaultValue = "BOTHSTREAM") Direction direction,
+        @ApiParam("Graph traversal depth. Limit > 1 value can result in very large data or error.")
+        @RequestParam(required = false, defaultValue = "1") Integer limit,
+        @ApiParam("Set of gene identifiers (HGNC Symbol) - 'seeds' for the graph traversal algorithm.")
+        @RequestParam(required = true) String[] source,
+        @ApiParam("Filter by binary relationship (SIF edge) type(s)")
+        @RequestParam(required = false) RelationTypeEnum[] pattern
     )
     {
         Set<String> sources =  new HashSet();
         for(String s : source)
             sources.add(s);
 
-        RelationTypeEnum[] relTypes = (pattern.length>0) ? pattern : props.getRelationships();
-        EdgeSelector edgeSelector = new RelationTypeSelector(relTypes);
-        Set<Object> result = QueryExecutor.searchNeighborhood(graph, edgeSelector, sources, direction, 1);
+        Set<Object> result = QueryExecutor.searchNeighborhood(graph,
+            new RelationTypeSelector((pattern!=null && pattern.length>0)?pattern:DEFAULT_RELS),
+            sources, direction, limit);
 
         return write(result);
     }
 
     @RequestMapping(path = "/pathsbetween", method = RequestMethod.GET, produces = MediaType.TEXT_PLAIN_VALUE)
     public String pathsbetween (
-        @RequestParam(defaultValue = "false") Boolean directed,
-        @RequestParam(defaultValue = "1") Integer limit,
-        @RequestParam String[] source,
-        @RequestParam(defaultValue = "") RelationTypeEnum[] pattern
+        @ApiParam("Directionality: 'true' is for DOWNSTREAM/UPSTREAM, 'false' - UNDIRECTED")
+        @RequestParam(required = false, defaultValue = "false") Boolean directed,
+        @ApiParam("Graph traversal depth. Limit > 3 can result in very large data or error.")
+        @RequestParam(required = false, defaultValue = "1") Integer limit,
+        @ApiParam("A set of gene identifiers.")
+        @RequestParam(required = true) String[] source,
+        @ApiParam("Filter by binary relationship (SIF edge) type(s)")
+        @RequestParam(required = false) RelationTypeEnum[] pattern
     )
     {
         Set<String> sources =  new HashSet();
         for(String s : source)
             sources.add(s);
 
-        if(limit > 3) limit = 1; //too much data or out of memory when limit > 3
-
-        RelationTypeEnum[] relTypes = (pattern.length>0) ? pattern : props.getRelationships();
-        EdgeSelector edgeSelector = new RelationTypeSelector(relTypes);
-        Set<Object> result = QueryExecutor.searchPathsBetween(graph, edgeSelector, sources, directed, limit);
+        Set<Object> result = QueryExecutor.searchPathsBetween(graph,
+            new RelationTypeSelector((pattern!=null && pattern.length>0)?pattern:DEFAULT_RELS),
+            sources, directed, limit);
 
         return write(result);
     }
 
     @RequestMapping(path = "/commonstream", method = RequestMethod.GET, produces = MediaType.TEXT_PLAIN_VALUE)
     public String commonstream (
-        @RequestParam(defaultValue = "DOWNSTREAM") Direction direction,
-//        @RequestParam(defaultValue = "1") Integer limit,
-        @RequestParam String[] source,
-        @RequestParam(defaultValue = "") RelationTypeEnum[] pattern
+        @ApiParam("Graph traversal direction. Use either DOWNSTREAM or UPSTREAM only.")
+        @RequestParam(required = false, defaultValue = "DOWNSTREAM") Direction direction,
+        @ApiParam("Graph traversal depth.")
+        @RequestParam(defaultValue = "1") Integer limit,
+        @ApiParam("A set of gene identifiers.")
+        @RequestParam(required = true) String[] source,
+        @ApiParam("Filter by binary relationship (SIF edge) type(s)")
+        @RequestParam(required = false) RelationTypeEnum[] pattern
     )
     {
         Set<String> sources =  new HashSet();
-        for(String s : source)
-            sources.add(s);
+        for(String s : source) sources.add(s);
 
-        RelationTypeEnum[] relTypes = (pattern.length>0) ? pattern : props.getRelationships();
-        EdgeSelector edgeSelector = new RelationTypeSelector(relTypes);
-        Set<Object> result = QueryExecutor.searchCommonStream(graph, edgeSelector, sources, direction, 1);
+        Set<Object> result = QueryExecutor.searchCommonStream(graph,
+            new RelationTypeSelector((pattern!=null && pattern.length>0)?pattern:DEFAULT_RELS),
+            sources, direction, limit);
 
         return write(result);
     }
 
     @RequestMapping(path = "/pathsfromto", method = RequestMethod.GET, produces = MediaType.TEXT_PLAIN_VALUE)
     public String pathsfromto (
-        @RequestParam(defaultValue = "1") Integer limit,
-        @RequestParam String[] source,
-        @RequestParam String[] target,
-        @RequestParam(defaultValue = "") RelationTypeEnum[] pattern
+        @ApiParam("Graph traversal depth. Limit > 2 can result in very large data or error.")
+        @RequestParam(required = false, defaultValue = "1") Integer limit,
+        @ApiParam("A source set of gene identifiers.")
+        @RequestParam(required = true) String[] source,
+        @ApiParam("A target set of gene identifiers.")
+        @RequestParam(required = true) String[] target,
+        @ApiParam("Filter by binary relationship (SIF edge) type(s)")
+        @RequestParam(required = false) RelationTypeEnum[] pattern
     )
     {
         Set<String> sources =  new HashSet();
-        for(String s : source)
-            sources.add(s);
+        for(String s : source) sources.add(s);
+
         Set<String> targets =  new HashSet();
-        for(String s : target)
-            targets.add(s);
+        for(String s : target) targets.add(s);
 
-        if(limit > 3) limit = 1; //too much data or out of memory when limit > 3
-
-        RelationTypeEnum[] relTypes = (pattern.length>0) ? pattern : props.getRelationships();
-        EdgeSelector edgeSelector = new RelationTypeSelector(relTypes);
-        Set<Object> result = QueryExecutor.searchPathsFromTo(graph, edgeSelector, sources, targets, limit);
+        Set<Object> result = QueryExecutor.searchPathsFromTo(graph,
+            new RelationTypeSelector((pattern!=null && pattern.length>0)?pattern:DEFAULT_RELS),
+            sources, targets, limit);
 
         return write(result);
     }
