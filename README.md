@@ -7,7 +7,7 @@ on the Pathway Commons' [Extended SIF](http://www.pathwaycommons.org/pc2/formats
 Clone, then build & run:
 ```
 ./gradlew build 
-java -jar build/libs/sifgraph-server.jar --server.port=8080
+java -Xmx16g -jar build/libs/sifgraph-server.jar
 ```
 
 The web service docs are then available at `http://localhost:8080/sifgraph/swagger-ui.html`
