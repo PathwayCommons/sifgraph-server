@@ -14,20 +14,25 @@ the end of the `java -jar` command (see below), or set `SIFGRAPH_DATA` system va
 Build:
 
 ```
-./gradlew build 
+./gradlew build
 ```
 
 Run:
 
 ```
-java -Xmx16g -jar build/libs/sifgraph-server.jar --sifgraph.data="file:path/to/graph.txt.gz" --server.port=8080
+java -jar build/libs/sifgraph-server.jar --sifgraph.data="file:path/to/graph.txt.gz" --server.port=8080
 ```
 
-Note: 
+Note: override the default list of SIF patterns using `--sifgraph.relationships=...` if needed (depends on the data).
 
-Use `--sifgraph.relationships=...` (see: src/main/resources/config/application.properties, -
-which you'd either modify there before building the app or simply copy and edit it in the current directory, 
-where the above command gets executed.)
+If you want to run __different instances__ of the graph server, e.g., for different species, then simply 
+copy src/main/resources/config/application.properties to the work/current directory, 
+rename (e.g., my.properties), modify (e.g., set another `server.port`, `sifgraph.relationships` 
+and `sifgraph.data` file), and run as:
+
+```
+java -jar build/libs/sifgraph-server.jar --spring.config.name=my
+```
 
 RESTful API (Swagger docs):
 
