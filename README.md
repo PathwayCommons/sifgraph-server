@@ -12,6 +12,7 @@ download the extended SIF data file and update the properties accordingly
 the end of the `java -jar` command (see below), or set `SIFGRAPH_DATA` system variable.)
 
 Build:
+
 ```
 ./gradlew build 
 ```
@@ -19,7 +20,17 @@ Build:
 Run:
 
 ```
-java -Xmx16g -jar build/libs/sifgraph-server.jar --sifgraph.data="path/to/graph.txt.gz"
+java -Xmx16g -jar build/libs/sifgraph-server.jar --sifgraph.data="file:path/to/graph.txt.gz" --server.port=8080
 ```
 
-The web service docs are then available at `http://localhost:8080/sifgraph/swagger-ui.html`
+Note: 
+
+Use `--sifgraph.relationships=...` (see: src/main/resources/config/application.properties, -
+which you'd either modify there before building the app or simply copy and edit it in the current directory, 
+where the above command gets executed.)
+
+RESTful API (Swagger docs):
+
+Once the app is built and running, 
+the auto-generated documentation is available at 
+`http://localhost:8080/sifgraph/swagger-ui.html`
