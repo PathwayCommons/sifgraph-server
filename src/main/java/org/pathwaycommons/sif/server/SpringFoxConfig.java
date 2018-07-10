@@ -25,13 +25,16 @@ public class SpringFoxConfig {
 //            .paths(PathSelectors.any())
             .paths(PathSelectors.ant("/v1/**"))
             .build()
+            .useDefaultResponseMessages(false)
             .apiInfo(getApiInfo());
     }
 
     private ApiInfo getApiInfo() {
         return new ApiInfo(
-            "SIFGraph",
-            "Pathway Commons SIF Graph Server",
+            "Pathway Commons SIFGraph",
+            "A RESTful web service built around the sifgraph java library that executes " +
+              "neighborhood, pathsbetween, etc., queries on the Pathway Commons extended SIF datafile " +
+              "(instead of querying the BioPAX L3 model).",
             "1", //api
             "free",
             new Contact("Pathway Commons",
