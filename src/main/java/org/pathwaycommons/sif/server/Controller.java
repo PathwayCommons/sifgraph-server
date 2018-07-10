@@ -45,41 +45,40 @@ public class Controller {
     DEFAULT_RELS = properties.getRelationships();
   }
 
-    @PostConstruct
-    void init() throws IOException {
-        final EdgeAnnotationType[] annotationTypes = props.getAnnotations();
-        sifWriter = new org.pathwaycommons.sif.io.Writer(false, annotationTypes);
-        InputStream is = new GZIPInputStream(resourceLoader.getResource(props.getData()).getInputStream());
-        graph = new Loader(annotationTypes).load(is);
-        is.close();
-    }
+  @PostConstruct
+  void init() throws IOException {
+    final EdgeAnnotationType[] annotationTypes = props.getAnnotations();
+    sifWriter = new org.pathwaycommons.sif.io.Writer(false, annotationTypes);
+    InputStream is = new GZIPInputStream(resourceLoader.getResource(props.getData()).getInputStream());
+    graph = new Loader(annotationTypes).load(is);
+    is.close();
+  }
 
-    @RequestMapping(path = "/neighborhood")
-    @ApiOperation(
-      value = "NEIGHBORHOOD",
-      notes = "Given gene names (source), finds the neighborhood sub-network in the " +
-        "Pathway Commons Simple Interaction Format (extened SIF) graph " +
-        "(see http://www.pathwaycommons.org/pc2/formats#sif)"
-    )
-    public String nhood (
-        @ApiParam("Graph traversal direction. Use UNDIRECTED if you want to see interacts-with relationships too.")
-        @RequestParam(required = false, defaultValue = "BOTHSTREAM") Direction direction,
-        @ApiParam("Graph traversal depth. Limit > 1 value can result in very large data or error.")
-        @RequestParam(required = false, defaultValue = "1") Integer limit,
-        @ApiParam("Set of gene identifiers (HGNC Symbol) - 'seeds' for the graph traversal algorithm.")
-        @RequestParam(required = true) String[] source,
-        @ApiParam("Filter by binary relationship (SIF edge) type(s)")
-        @RequestParam(required = false) RelationTypeEnum[] pattern
-    )
-    {
-        Set<String> sources =  new HashSet();
-        for(String s : source)
-            sources.add(s);
+  @RequestMapping(path = "/neighborhood")
+  @ApiOperation(
+    value = "NEIGHBORHOOD",
+    notes = "Given gene names (source), finds the neighborhood sub-network in the " +
+      "Pathway Commons Simple Interaction Format (extened SIF) graph " +
+      "(see http://www.pathwaycommons.org/pc2/formats#sif)"
+  )
+  public String nhood(
+    @ApiParam("Graph traversal direction. Use UNDIRECTED if you want to see interacts-with relationships too.")
+    @RequestParam(required = false, defaultValue = "BOTHSTREAM") Direction direction,
+    @ApiParam("Graph traversal depth. Limit > 1 value can result in very large data or error.")
+    @RequestParam(required = false, defaultValue = "1") Integer limit,
+    @ApiParam("Set of gene identifiers (HGNC Symbol) - 'seeds' for the graph traversal algorithm.")
+    @RequestParam(required = true) String[] source,
+    @ApiParam("Filter by binary relationship (SIF edge) type(s)")
+    @RequestParam(required = false) RelationTypeEnum[] pattern
+  ) {
+    Set<String> sources = new HashSet();
+    for (String s : source)
+      sources.add(s);
 
-        pattern = (pattern!=null && pattern.length>0)?pattern:DEFAULT_RELS;
-        try {
-        Set<Object> result = QueryExecutor.searchNeighborhood(graph,
-            new RelationTypeSelector(pattern), sources, direction, limit);
+    pattern = (pattern != null && pattern.length > 0) ? pattern : DEFAULT_RELS;
+    try {
+      Set<Object> result = QueryExecutor.searchNeighborhood(graph,
+        new RelationTypeSelector(pattern), sources, direction, limit);
 
       return write(result);
     } catch (Exception e) {
@@ -87,26 +86,25 @@ public class Controller {
     }
   }
 
-    @RequestMapping(path = "/pathsbetween")
-    @ApiOperation(
-      value = "PATHS-BETWEEN",
-      notes = "Given gene names (sources), finds the paths between them; extracts a sub-network from the " +
-        "Pathway Commons SIF graph."
-    )
-    public String pathsbetween (
-        @ApiParam("Directionality: 'true' is for DOWNSTREAM/UPSTREAM, 'false' - UNDIRECTED")
-        @RequestParam(required = false, defaultValue = "false") Boolean directed,
-        @ApiParam("Graph traversal depth. Limit > 3 can result in very large data or error.")
-        @RequestParam(required = false, defaultValue = "1") Integer limit,
-        @ApiParam("A set of gene identifiers.")
-        @RequestParam(required = true) String[] source,
-        @ApiParam("Filter by binary relationship (SIF edge) type(s)")
-        @RequestParam(required = false) RelationTypeEnum[] pattern
-    )
-    {
-        Set<String> sources =  new HashSet();
-        for(String s : source)
-            sources.add(s);
+  @RequestMapping(path = "/pathsbetween")
+  @ApiOperation(
+    value = "PATHS-BETWEEN",
+    notes = "Given gene names (sources), finds the paths between them; extracts a sub-network from the " +
+      "Pathway Commons SIF graph."
+  )
+  public String pathsbetween(
+    @ApiParam("Directionality: 'true' is for DOWNSTREAM/UPSTREAM, 'false' - UNDIRECTED")
+    @RequestParam(required = false, defaultValue = "false") Boolean directed,
+    @ApiParam("Graph traversal depth. Limit > 3 can result in very large data or error.")
+    @RequestParam(required = false, defaultValue = "1") Integer limit,
+    @ApiParam("A set of gene identifiers.")
+    @RequestParam(required = true) String[] source,
+    @ApiParam("Filter by binary relationship (SIF edge) type(s)")
+    @RequestParam(required = false) RelationTypeEnum[] pattern
+  ) {
+    Set<String> sources = new HashSet();
+    for (String s : source)
+      sources.add(s);
 
     try {
       Set<Object> result = QueryExecutor.searchPathsBetween(graph,
@@ -119,30 +117,29 @@ public class Controller {
     }
   }
 
-    @RequestMapping(path = "/commonstream")
-    @ApiOperation(
-      value = "COMMON-STREAM",
-      notes = "Given gene symbols (sources), finds the common stream for them; " +
-        "extracts a sub-network from the loaded Pathway Commons SIF model."
-    )
-    public String commonstream (
-        @ApiParam("Graph traversal direction. Use either DOWNSTREAM or UPSTREAM only.")
-        @RequestParam(required = false, defaultValue = "DOWNSTREAM") Direction direction,
-        @ApiParam("Graph traversal depth.")
-        @RequestParam(defaultValue = "1") Integer limit,
-        @ApiParam("A set of gene identifiers.")
-        @RequestParam(required = true) String[] source,
-        @ApiParam("Filter by binary relationship (SIF edge) type(s)")
-        @RequestParam(required = false) RelationTypeEnum[] pattern
-    )
-    {
-        Set<String> sources =  new HashSet();
-        for(String s : source) sources.add(s);
+  @RequestMapping(path = "/commonstream")
+  @ApiOperation(
+    value = "COMMON-STREAM",
+    notes = "Given gene symbols (sources), finds the common stream for them; " +
+      "extracts a sub-network from the loaded Pathway Commons SIF model."
+  )
+  public String commonstream(
+    @ApiParam("Graph traversal direction. Use either DOWNSTREAM or UPSTREAM only.")
+    @RequestParam(required = false, defaultValue = "DOWNSTREAM") Direction direction,
+    @ApiParam("Graph traversal depth.")
+    @RequestParam(defaultValue = "1") Integer limit,
+    @ApiParam("A set of gene identifiers.")
+    @RequestParam(required = true) String[] source,
+    @ApiParam("Filter by binary relationship (SIF edge) type(s)")
+    @RequestParam(required = false) RelationTypeEnum[] pattern
+  ) {
+    Set<String> sources = new HashSet();
+    for (String s : source) sources.add(s);
 
-        try {
-        Set<Object> result = QueryExecutor.searchCommonStream(graph,
-            new RelationTypeSelector((pattern!=null && pattern.length>0)?pattern:DEFAULT_RELS),
-            sources, direction, limit);
+    try {
+      Set<Object> result = QueryExecutor.searchCommonStream(graph,
+        new RelationTypeSelector((pattern != null && pattern.length > 0) ? pattern : DEFAULT_RELS),
+        sources, direction, limit);
 
       return write(result);
     } catch (Exception e) {
@@ -150,28 +147,27 @@ public class Controller {
     }
   }
 
-    @RequestMapping(path = "/pathsfromto")
-    @ApiOperation(
-      value = "PATHS-FROM-TO",
-      notes = "Given source and target (optional) gene symbols, finds the paths from sources to targets " +
-        "(or between sources if targets are not present); extracts that sub-network from the loaded graph."
-    )
-    public String pathsfromto (
-        @ApiParam("Graph traversal depth. Limit > 2 can result in very large data or error.")
-        @RequestParam(required = false, defaultValue = "1") Integer limit,
-        @ApiParam("A source set of gene identifiers.")
-        @RequestParam(required = true) String[] source,
-        @ApiParam("A target set of gene identifiers.")
-        @RequestParam(required = true) String[] target,
-        @ApiParam("Filter by binary relationship (SIF edge) type(s)")
-        @RequestParam(required = false) RelationTypeEnum[] pattern
-    )
-    {
-        Set<String> sources =  new HashSet();
-        for(String s : source) sources.add(s);
+  @RequestMapping(path = "/pathsfromto")
+  @ApiOperation(
+    value = "PATHS-FROM-TO",
+    notes = "Given source and target (optional) gene symbols, finds the paths from sources to targets " +
+      "(or between sources if targets are not present); extracts that sub-network from the loaded graph."
+  )
+  public String pathsfromto(
+    @ApiParam("Graph traversal depth. Limit > 2 can result in very large data or error.")
+    @RequestParam(required = false, defaultValue = "1") Integer limit,
+    @ApiParam("A source set of gene identifiers.")
+    @RequestParam(required = true) String[] source,
+    @ApiParam("A target set of gene identifiers.")
+    @RequestParam(required = true) String[] target,
+    @ApiParam("Filter by binary relationship (SIF edge) type(s)")
+    @RequestParam(required = false) RelationTypeEnum[] pattern
+  ) {
+    Set<String> sources = new HashSet();
+    for (String s : source) sources.add(s);
 
-        Set<String> targets =  new HashSet();
-        for(String s : target) targets.add(s);
+    Set<String> targets = new HashSet();
+    for (String s : target) targets.add(s);
 
     try {
       Set<Object> result = QueryExecutor.searchPathsFromTo(graph,
