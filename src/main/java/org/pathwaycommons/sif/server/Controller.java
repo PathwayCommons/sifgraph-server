@@ -46,7 +46,7 @@ public class Controller {
   }
 
   @PostConstruct
-  void init() throws IOException {
+  protected void init() throws IOException {
     final EdgeAnnotationType[] annotationTypes = props.getAnnotations();
     sifWriter = new org.pathwaycommons.sif.io.Writer(false, annotationTypes);
     InputStream is = new GZIPInputStream(resourceLoader.getResource(props.getData()).getInputStream());
@@ -69,21 +69,17 @@ public class Controller {
     @ApiParam("Set of gene identifiers (HGNC Symbol) - 'seeds' for the graph traversal algorithm.")
     @RequestParam(required = true) String[] source,
     @ApiParam("Filter by binary relationship (SIF edge) type(s)")
-    @RequestParam(required = false) RelationTypeEnum[] pattern
-  ) {
+    @RequestParam(required = false) RelationTypeEnum[] pattern) throws IOException
+  {
     Set<String> sources = new HashSet();
     for (String s : source)
       sources.add(s);
 
-    pattern = (pattern != null && pattern.length > 0) ? pattern : DEFAULT_RELS;
-    try {
-      Set<Object> result = QueryExecutor.searchNeighborhood(graph,
-        new RelationTypeSelector(pattern), sources, direction, limit);
+    Set<Object> result = QueryExecutor.searchNeighborhood(graph,
+      new RelationTypeSelector((pattern!=null && pattern.length>0)?pattern:DEFAULT_RELS),
+      sources, direction, limit);
 
-      return write(result);
-    } catch (Exception e) {
-      throw new RuntimeException("/neighborhood failed: " + e);
-    }
+    return write(result);
   }
 
   @RequestMapping(path = "/pathsbetween")
@@ -100,21 +96,17 @@ public class Controller {
     @ApiParam("A set of gene identifiers.")
     @RequestParam(required = true) String[] source,
     @ApiParam("Filter by binary relationship (SIF edge) type(s)")
-    @RequestParam(required = false) RelationTypeEnum[] pattern
-  ) {
+    @RequestParam(required = false) RelationTypeEnum[] pattern) throws IOException
+  {
     Set<String> sources = new HashSet();
     for (String s : source)
       sources.add(s);
 
-    try {
-      Set<Object> result = QueryExecutor.searchPathsBetween(graph,
-        new RelationTypeSelector((pattern != null && pattern.length > 0) ? pattern : DEFAULT_RELS),
-        sources, directed, limit);
+    Set<Object> result = QueryExecutor.searchPathsBetween(graph,
+      new RelationTypeSelector((pattern!=null && pattern.length>0)?pattern:DEFAULT_RELS),
+      sources, directed, limit);
 
-      return write(result);
-    } catch (Exception e) {
-      throw new RuntimeException("/pathsbetween failed: " + e);
-    }
+    return write(result);
   }
 
   @RequestMapping(path = "/commonstream")
@@ -131,20 +123,16 @@ public class Controller {
     @ApiParam("A set of gene identifiers.")
     @RequestParam(required = true) String[] source,
     @ApiParam("Filter by binary relationship (SIF edge) type(s)")
-    @RequestParam(required = false) RelationTypeEnum[] pattern
-  ) {
+    @RequestParam(required = false) RelationTypeEnum[] pattern) throws IOException
+  {
     Set<String> sources = new HashSet();
     for (String s : source) sources.add(s);
 
-    try {
-      Set<Object> result = QueryExecutor.searchCommonStream(graph,
-        new RelationTypeSelector((pattern != null && pattern.length > 0) ? pattern : DEFAULT_RELS),
-        sources, direction, limit);
+    Set<Object> result = QueryExecutor.searchCommonStream(graph,
+      new RelationTypeSelector((pattern!=null && pattern.length>0)?pattern:DEFAULT_RELS),
+      sources, direction, limit);
 
-      return write(result);
-    } catch (Exception e) {
-      throw new RuntimeException("/commonstream failed: " + e);
-    }
+    return write(result);
   }
 
   @RequestMapping(path = "/pathsfromto")
@@ -161,23 +149,19 @@ public class Controller {
     @ApiParam("A target set of gene identifiers.")
     @RequestParam(required = true) String[] target,
     @ApiParam("Filter by binary relationship (SIF edge) type(s)")
-    @RequestParam(required = false) RelationTypeEnum[] pattern
-  ) {
+    @RequestParam(required = false) RelationTypeEnum[] pattern) throws IOException
+  {
     Set<String> sources = new HashSet();
     for (String s : source) sources.add(s);
 
     Set<String> targets = new HashSet();
     for (String s : target) targets.add(s);
 
-    try {
-      Set<Object> result = QueryExecutor.searchPathsFromTo(graph,
-        new RelationTypeSelector((pattern != null && pattern.length > 0) ? pattern : DEFAULT_RELS),
-        sources, targets, limit);
+    Set<Object> result = QueryExecutor.searchPathsFromTo(graph,
+      new RelationTypeSelector((pattern!=null && pattern.length>0) ? pattern:DEFAULT_RELS),
+      sources, targets, limit);
 
-      return write(result);
-    } catch (Exception e) {
-      throw new RuntimeException("/pathsfromto failed: " + e);
-    }
+    return write(result);
   }
 
   private String write(Set<Object> result) throws IOException {

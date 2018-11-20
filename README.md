@@ -16,14 +16,14 @@ the end of the `java -jar` command (see below), or set `SIFGRAPH_DATA` system va
 
 Build:
 
-```
+```commandline
 ./gradlew build
 ```
 
 Run:
 
-```
-java -jar build/libs/sifgraph-server.jar --sifgraph.data="file:path/to/graph.txt.gz" --server.port=8080
+```commandline
+java -jar build/libs/sifgraph-server-0.3.0.jar -Xmx4g --sifgraph.data="file:/path/to/graph.txt.gz" --server.port=8080
 ```
 
 Note: override the default list of SIF patterns using `--sifgraph.relationships=...` if needed (depends on the data).
@@ -33,7 +33,7 @@ copy src/main/resources/config/application.properties to the work/current direct
 rename (e.g., my.properties), modify (e.g., set another `server.port`, `sifgraph.relationships` 
 and `sifgraph.data` file), and run as:
 
-```
+```commandline
 java -jar build/libs/sifgraph-server.jar --spring.config.name=my
 ```
 
@@ -41,4 +41,4 @@ RESTful API (Swagger docs):
 
 Once the app is built and running, 
 the auto-generated documentation is available at 
-`http://localhost:8080/sifgraph/swagger-ui.html`
+`http://localhost:8080/sifgraph/`
