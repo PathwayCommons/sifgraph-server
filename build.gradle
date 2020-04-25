@@ -1,6 +1,6 @@
 buildscript {
     ext {
-        springBootVersion = '2.1.0.RELEASE'
+        springBootVersion = '2.2.6.RELEASE'
     }
     repositories {
         maven {
@@ -9,7 +9,6 @@ buildscript {
     }
     dependencies {
         classpath "org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}"
-        classpath "gradle.plugin.com.palantir.gradle.docker:gradle-docker:0.20.1"
     }
 }
 
@@ -17,7 +16,6 @@ apply plugin: 'java'
 apply plugin: 'idea'
 apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
-apply plugin: 'com.palantir.docker'
 
 repositories {
     mavenCentral()
@@ -47,15 +45,5 @@ dependencies {
 
 sourceCompatibility = 1.8
 group = 'pathwaycommons'
-version =  '0.3.0'
+version =  '0.3.1'
 
-docker {
-    dependsOn build
-    name "${project.group}/${bootJar.baseName}"
-    files bootJar.archivePath
-    buildArgs(['JAR_FILE': "${bootJar.archiveName}"])
-}
-
-task wrapper(type: Wrapper) {
-    gradleVersion = '4.8.1'
-}
