@@ -1,6 +1,6 @@
 # Pathway Commons SIF Graph Query Server
 
-![Build](https://github.com/PathwayCommons/sifgraph-server/actions/workflows/gradle.yml/badge.svg?branch=master)
+[![gradle](https://github.com/PathwayCommons/sifgraph-server/actions/workflows/gradle.yml/badge.svg)](https://github.com/PathwayCommons/sifgraph-server/actions/workflows/gradle.yml)
 
 A Spring Boot RESTful web service built around [sifgraph](https://github.com/PathwayCommons/sifgraph) 
 java library that executes _neighborhood_, _pathsbetween_, etc., graph queries 
