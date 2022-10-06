@@ -1,0 +1,52 @@
+name: gradle
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+#    env:
+#      _JAVA_OPTIONS: "--add-opens=java.base/java.lang=ALL-UNNAMED --add-opens=java.base/java.lang.reflect=ALL-UNNAMED"
+
+    name: Build with Gradle
+    
+    strategy:
+      fail-fast: false
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up JDK
+        uses: actions/setup-java@v2
+        with:
+          java-version: 17
+          distribution: 'temurin'
+          cache: gradle
+      - name: Build with Gradle
+        run: |
+          ./gradlew build
+          find . -name '*.jar'
+      - name: Cleanup Gradle Cache
+        # Remove some files from the Gradle cache, so they aren't cached by GitHub Actions.
+        # Restoring these files from a GitHub Actions cache might cause problems for future builds.
+        run: |
+          rm -f ~/.gradle/caches/modules-2/modules-2.lock
+          rm -f ~/.gradle/caches/modules-2/gc.properties
+      - name: Move Artifacts
+        run: |
+          pwd
+          find . -name 'sifgraph-server*.jar' -exec bash -c 'mv $0 ./sifgraph-server.jar' {} \;
+          ls
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        with: 
+          name: 'latest'
+          tag_name: 'latest'
+          prerelease: true
+          files: sifgraph-server.jar

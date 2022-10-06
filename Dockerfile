@@ -1,4 +1,4 @@
-FROM openjdk:13-jdk-alpine
+FROM openjdk:17
 VOLUME /tmp
 ARG JAR_FILE="build/libs/sifgraph-server*.jar"
 ARG DATA_FILE="data.txt.gz"

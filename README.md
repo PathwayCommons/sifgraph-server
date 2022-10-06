@@ -1,7 +1,6 @@
 # Pathway Commons SIF Graph Query Server
 
-[![Build Status](https://travis-ci.org/PathwayCommons/sifgraph-server.svg?branch=master)](https://travis-ci.org/PathwayCommons/sifgraph-server) 
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/edad8a3d679c4d99b608440dc6d397a8)](https://www.codacy.com/app/IgorRodchenkov/sifgraph-server?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=PathwayCommons/sifgraph-server&amp;utm_campaign=Badge_Grade)
+![Build](https://github.com/PathwayCommons/sifgraph-server/actions/workflows/gradle.yml/badge.svg?branch=master)
 
 A Spring Boot RESTful web service built around [sifgraph](https://github.com/PathwayCommons/sifgraph) 
 java library that executes _neighborhood_, _pathsbetween_, etc., graph queries 
