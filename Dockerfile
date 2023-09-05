@@ -1,9 +1,6 @@
-FROM openjdk:17
+FROM eclipse-temurin:latest
 VOLUME /tmp
-ARG JAR_FILE="build/libs/sifgraph-server*.jar"
-ARG DATA_FILE="data.txt.gz"
-ENV DATA_URL="file:${DATA_FILE}"
-COPY ${JAR_FILE} app.jar
-COPY ${DATA_FILE} .
-ENTRYPOINT ["java","-Xmx16g","-Djava.security.egd=file:/dev/./urandom","-jar","/app.jar", "--sifgraph.data=${DATA_URL}"]
+ENV SIFGRAPH_DATA="classpath:bmp.gz"
+COPY build/libs/sifgraph-server-1.0.jar app.jar
+ENTRYPOINT ["java","-Xmx16g","-Djava.security.egd=file:/dev/./urandom","-jar","/app.jar"]
 EXPOSE 8080

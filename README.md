@@ -8,26 +8,29 @@ on the Pathway Commons' [Extended SIF](http://www.pathwaycommons.org/pc2/formats
 
 Clone the repository.
 
-See `src/main/resources/config/application.properties` comments; 
-download a Pathway Commons Extended SIF data archive and save it as data.txt.gz in this project directory, e.g.:
-
-```commandline
-wget -O data.txt.gz "https://www.pathwaycommons.org/archives/PC2/v12/PathwayComons12.All.hgnc.txt.gz"
-```
-
-(alternatively, set `--sifgraph.data=...`, etc., options at 
-the end of the `java -jar` command (see below), or set `SIFGRAPH_DATA` system variable.)
-
 Build:
 
 ```commandline
 ./gradlew build
 ```
 
+Get data:
+
+See comments in: `src/main/resources/config/application.properties`; 
+
+Download a Pathway Commons Extended SIF data archive and save it as data.gz in current dir:
+
+```commandline
+wget -O data.gz "https://www.pathwaycommons.org/archives/PC2/v12/PathwayComons12.All.hgnc.txt.gz"
+```
+
+Alternatively, can use the remote URL in the `--sifgraph.data=https://...` option  
+for the `java` command below, or set via `SIFGRAPH_DATA` system/environment property instead.
+
 Run:
 
 ```commandline
-java -Xmx8g -jar build/libs/sifgraph-server*.jar
+$JAVA_HOME/bin/java -Xmx8g -jar build/libs/sifgraph-server*.jar --sifgraph.data=file:data.gz
 ```
 
 Note: override the default list of SIF patterns using `--sifgraph.relationships=...` if needed (depends on the data).
@@ -41,7 +44,7 @@ and `sifgraph.data` file), and run as:
 java -Xmx8g -jar build/libs/sifgraph-server*.jar --spring.config.name=my
 ```
 
-or
+or simply provide all the different options via the args or env properties:
 
 ```commandline
 java -Xmx8g  -jar build/libs/sifgraph-server*.jar --sifgraph.data="file:<other.file>" --server.port=<otherPort>
@@ -56,8 +59,11 @@ the auto-generated documentation is available at
 
 
 ## Docker
-You can also build and run the docker image as follows   
-(`<PORT>` - actual port number where the server will run; data file download step above is also required). 
+You can also build and run the docker image as follows 
+
+You need to pass `SIFGRAPH_DATA` URL and (if `file:`) mount a local file to the container FS as 
+read-only volume (or the app will load test/demo data from its classpath by default).
+
 
 ```commandline
 ./gradlew build
@@ -65,7 +71,7 @@ docker build . -t pathwaycommons/sifgraph-server
 docker run -it --rm --name sifgraph-server -p <PORT>:8080 pathwaycommons/sifgraph-server 
 ```
 
-Optionally, (a member of 'pathwaycommons' group) can now push the latest Docker image there:
+Optionally, a member of 'pathwaycommons' group can now push the latest Docker image to hub.docker.com:
 
 ```commandline
 docker login

@@ -1,6 +1,6 @@
 buildscript {
     ext {
-        springBootVersion = '2.2.6.RELEASE'
+        springBootVersion = '2.7.15'
     }
     repositories {
         maven {
@@ -26,12 +26,10 @@ repositories {
 
 dependencies {
     implementation 'pathwaycommons.sif:sifgraph:1.1.0-SNAPSHOT'
-
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation "org.springframework.boot:spring-boot-configuration-processor"
-    implementation 'io.springfox:springfox-swagger2:2.7.0'
-    implementation 'io.springfox:springfox-swagger-ui:2.7.0'
+    implementation 'org.springdoc:springdoc-openapi-ui:1.7.0'
 
     runtimeOnly 'org.springframework.boot:spring-boot-devtools'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
@@ -43,6 +41,10 @@ dependencies {
     implementation 'javax.activation:activation:1.1.1'
 }
 
-sourceCompatibility = 8
+test {
+    useJUnitPlatform()
+}
+
+sourceCompatibility = 17
 group = 'pathwaycommons'
-version =  '0.4.0'
+version =  '1.0'
