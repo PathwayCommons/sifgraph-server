@@ -62,7 +62,7 @@ the auto-generated documentation is available at
 You can also build and run the docker image as follows 
 
 You need to pass `SIFGRAPH_DATA` URL and (if `file:`) mount a local file to the container FS as 
-read-only volume (or the app will load test/demo data from its classpath by default).
+read-only volume (otherwise, it loads test/demo data from classpath, which e.g. contains interactions of "BMP2").
 
 
 ```commandline
