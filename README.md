@@ -81,7 +81,7 @@ docker push pathwaycommons/sifgraph-server
 So, other users could skip building from sources and simply run the app:
 ```commandline
 docker pull
-docker run -p <PORT>:8080 -t pathwaycommons/sifgraph-server
+docker run --rm --name sifg -p 8080:8080 -it pathwaycommons/sifgraph-server
 ```
 
 (you can `Ctrl-c` and quit the console; the container is still there running; check with `docker ps`)
