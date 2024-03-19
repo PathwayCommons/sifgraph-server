@@ -21,7 +21,7 @@ See comments in: `src/main/resources/config/application.properties`;
 Download a Pathway Commons Extended SIF data archive and save it as data.gz in current dir:
 
 ```commandline
-wget -O data.gz "https://www.pathwaycommons.org/archives/PC2/v12/PathwayComons12.All.hgnc.txt.gz"
+wget -O data.gz "https://www.pathwaycommons.org/archives/PC2/v14/PC14.All.hgnc.txt.gz"
 ```
 
 Alternatively, can use the remote URL in the `--sifgraph.data=https://...` option  
