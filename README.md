@@ -84,4 +84,3 @@ docker pull
 docker run --rm --name sifg -p 8080:8080 -it pathwaycommons/sifgraph-server
 ```
 
-(you can `Ctrl-c` and quit the console; the container is still there running; check with `docker ps`)
